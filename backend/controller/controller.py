@@ -38,7 +38,7 @@ class WebsocketManager:
             if sender and connection == sender:
                 continue  
             try:
-                await connection.send_json({'data' : message,'status_code' : 400})
+                await connection.send_json({'data' : message,'status_code' : 200})
             except WebSocketDisconnect:
                 disconnected.append(connection)
 
