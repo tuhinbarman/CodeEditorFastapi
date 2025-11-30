@@ -13,7 +13,8 @@ def get_db():
     db = sessionlocal()
     try:
         yield db
-    except:
+    except Exception as err:
+        print(err)
         print('Error connecting to db')
     finally:
         db.close()
