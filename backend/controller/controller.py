@@ -14,7 +14,7 @@ class WebsocketManager:
 
         if room_count < len(self.rooms[room_id]):
             await websocket.accept()
-            await websocket.send_json({'data' : 'The room is full','status_code' : 400})
+            await websocket.send_json({'data' : "Room is full",'status_code' : 400})
             await websocket.close(code=1008, reason="Room is full")
             return False
             
@@ -38,8 +38,8 @@ class WebsocketManager:
             if sender and connection == sender:
                 continue  
             try:
-                # await connection.send_json({'data' : message,'status_code' : 200})
-                await connection.send_json({"event": "MESSAGE", "payload": message})
+                await connection.send_json({'data' : message,'status_code' : 200})
+                # await connection.send_text(message)
             except WebSocketDisconnect:
                 disconnected.append(connection)
 
