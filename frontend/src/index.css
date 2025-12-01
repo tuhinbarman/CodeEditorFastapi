@@ -1,0 +1,9 @@
+html, body, #root {
+  height: 100%;
+}
+
+
+.monaco-editor, .overflow-guard {
+  height: 100% !important;
+  width: 100% !important;
+}
