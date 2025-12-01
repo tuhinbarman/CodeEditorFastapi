@@ -90,7 +90,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: int, db: Session = D
 
         try:
             while True:
-                data = await websocket.receive_text()  
+                data = await websocket.receive_json()  
                 await manager.broadcast(data, room_id)
 
         except WebSocketDisconnect:
