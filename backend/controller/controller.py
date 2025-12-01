@@ -12,7 +12,7 @@ class WebsocketManager:
         if room_id not in self.rooms:
             self.rooms[room_id] = set()
 
-        if room_count < len(self.rooms[room_id]):
+        if room_count <= len(self.rooms[room_id]):
             await websocket.accept()
             await websocket.send_json({'data' : "Room is full",'status_code' : 400})
             await websocket.close(code=1008, reason="Room is full")
