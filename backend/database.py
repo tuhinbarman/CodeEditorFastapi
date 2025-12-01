@@ -3,6 +3,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from conf import *
 
+# DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+
 engine = create_engine(DATABASE_URL,echo=True)
 
 sessionlocal = sessionmaker(autoflush=False,autocommit=False,bind=engine)
