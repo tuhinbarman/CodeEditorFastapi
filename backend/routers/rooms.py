@@ -55,7 +55,7 @@ async def create_room(request : RoomRequest,db : Session = Depends(get_db)):
         db.refresh(new_room)
 
         result = {
-            'room_id' : new_room.id,
+            'roomid' : new_room.id,
             'createdby' : new_room.createdby,
             'no_of_users_allowed' : new_room.no_of_users_allowed,
             'code' : new_room.code,
