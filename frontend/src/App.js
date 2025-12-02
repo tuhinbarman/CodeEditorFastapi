@@ -3,11 +3,13 @@ import CodeEditor from "./components/CodeEditor";
 
 export default function App() {
   return (
-    <div className="flex justify-center items-center w-screen h-screen bg-gray-900">
-      {/* Fixed size box */}
-      <div className="w-[900px] h-[550px] bg-white shadow-2xl rounded-xl overflow-hidden flex">
+    <div className="h-screen w-screen flex overflow-hidden">
+      <div className="flex">
         <LeftSidebar />
-        <CodeEditor />            {/* ← No extra div, no padding here */}
+        <div style={{ marginLeft: 260, width: "calc(100% - 260px)" ,position:"fixed"}}>
+          <CodeEditor />
+        </div>
+        
       </div>
     </div>
   );
