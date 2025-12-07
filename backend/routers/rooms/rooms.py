@@ -1,13 +1,14 @@
 from fastapi import APIRouter,Depends,WebSocket,WebSocketDisconnect
 from sqlalchemy.orm import Session
+from sqlalchemy import func,String,cast
 from fastapi.responses import JSONResponse
 from starlette import status
 from database import *
 from utils import generator
-from models import Rooms
+from models import Rooms,CodeLanguage
 from schemas.room import RoomRequest,AutoCompleteRequest
 from datetime import datetime
-from controller.controller import WebsocketManager,AutoCompleteManager
+from controller.rooms.roommanager import WebsocketManager,AutoCompleteManager
 
 router = APIRouter(prefix='',tags=['rooms'])
 manager = WebsocketManager()
@@ -19,8 +20,9 @@ async def get_rooms(db : Session = Depends(get_db)):
 
     try:
         room_data = db.query(Rooms).with_entities(
-                Rooms.id, Rooms.createdby, Rooms.no_of_users_allowed, Rooms.code
-            ).all()
+                Rooms.id, Rooms.createdby, Rooms.no_of_users_allowed, Rooms.code,
+                CodeLanguage.language_id,CodeLanguage.language_name
+            ).join(CodeLanguage,Rooms.language_id == CodeLanguage.language_id,isouter =True).all()
         
         result = []
         for room in generator(room_data):
@@ -28,12 +30,15 @@ async def get_rooms(db : Session = Depends(get_db)):
                 'roomid' : room.id,
                 'createdby' : room.createdby,
                 'no_of_users_allowed' : room.no_of_users_allowed,
-                'code' : room.code
+                'code' : room.code,
+                'language_id' : room.language_id,
+                'language_name' : room.language_name
             })
 
         return JSONResponse(content={'data' : result,'message' : 'Success'},status_code=200)
 
     except Exception as err:
+        print(err)
         return JSONResponse(content = {'data' : 'Something went wrong!!','message' : 'Fail'},
                                        status_code=500)
 
@@ -119,6 +124,36 @@ async def autocomplete(request : AutoCompleteRequest,db : Session = Depends(get_
         db.rollback()
         return JSONResponse(content = {'data' : 'Something went wrong!!','message' : 'Fail'},
                                        status_code=500)
+
+@router.get('/get-languages')
+async def get_code_languages(db : Session = Depends(get_db)):
+    try:
+        
+        code_language_data = db.query(CodeLanguage.language_id,
+                                      CodeLanguage.language_name,
+                                      CodeLanguage.version,
+                                      (CodeLanguage.language_name
+                                        + '-' + 
+                                        cast(CodeLanguage.version, String)).label("language_full_version")
+                                      ).all()
+
+        result = []
+
+        for language in generator(code_language_data):
+            result.append({
+                'language_id' : language.language_id,
+                'language_name' : language.language_name,
+                'version' : language.version,
+                'language_full_version' : language.language_full_version
+            })
+
+        return JSONResponse(content=result,status_code=200)
+
+    except Exception as err:
+        print(err)
+        return JSONResponse(content = {'data' : 'Something went wrong!!','message' : 'Fail'},
+                                       status_code=500)
+
 
 
 
